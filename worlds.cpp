@@ -25,7 +25,7 @@ int Planet::gen_colour(){
 int Planet::gen_name(int usize){
     std::random_device r;
     std::default_random_engine re(r());
-    std::uniform_int_distribution<> dist(0, usize);
+    std::uniform_int_distribution<> dist(1, usize);
 
     return dist(re);
 }
@@ -53,7 +53,8 @@ Planet *Universe::new_planet(){
             return planet;
         }
         else{
-            this->max_planets *= 10;
+            this->max_planets *= 2;
+            std::cout << "You fail to comprehend your insignificance... again\n";
             delete(planet);
         }
     }
@@ -69,17 +70,19 @@ void Player::use_portal(int nportal){
 
     std::random_device r;
     std::default_random_engine re(r());
-    if(std::generate_canonical<double, 10>(re) >= (warpable->size())/(this->get_uni()->get_max_planets())){
-        Planet *warp_to = this->get_uni()->new_planet();
-        (*warp_to->get_portals())[warp_to->get_exit()] = current_pos;
-        (*current_pos->get_portals())[nportal] = warp_to;
-        current_pos = warp_to;
 
+    if((*current_pos->get_portals())[nportal] != 0){
+        current_pos = (*current_pos->get_portals())[nportal];
         return;
-    }
-    else{
-        //auto current_position = this->get_uni()->get_warpable()->extract(current_pos);
 
+    }
+
+    double xx = (warpable->size());
+    double yy = (this->get_uni()->get_max_planets());
+
+    if(std::generate_canonical<double, 10>(re) <= xx/yy){
+        //auto current_position = this->get_uni()->get_warpable()->extract(current_pos);
+        std::cout<< "Familiar place...\n";
         warpable->erase(current_pos->get_name());
 
         std::random_device r;
@@ -103,6 +106,17 @@ void Player::use_portal(int nportal){
         }
 
         current_pos = warp_to;
+
+        return;
+    }
+    else{
+        Planet *warp_to = this->get_uni()->new_planet();
+
+        (*warp_to->get_portals())[warp_to->get_exit()] = current_pos;
+        (*current_pos->get_portals())[nportal] = warp_to;
+        current_pos = warp_to;
+        std::cout << "Brave new world!\n";
+        return;
     }
 
 }
@@ -110,7 +124,14 @@ void Player::use_portal(int nportal){
 
 void Player::where_am_i(){
     std::cout << "On the orbit of: " << current_pos->get_name() << '\n';
+    std::cout <<"colour: #" << std::hex << current_pos->get_colour() << '\n';
+
     for(int i = 0; i < current_pos->get_nportals(); i++){
-        std::cout << i << "====" << (*current_pos->get_portals())[i] << '\n';
+        if((*current_pos->get_portals())[i] == 0){
+            std::cout << i << "====" << "uncharted\n";
+        }
+        else{
+            std::cout << i << "====" << ((*current_pos->get_portals())[i])->get_name() << '\n';
+        }
     }
 }
