@@ -21,6 +21,8 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/unordered_map.hpp>
 
+
+
 #define COLOUR_MAX 16777215
 #define PLANET_MAX 100
 
@@ -79,7 +81,6 @@ public:
 
     int get_exit();
 
-
 };
 
 class Universe{
@@ -130,8 +131,6 @@ public:
     Player(Planet* position, Universe* universe): current_pos(position), universe(universe){
 
     }
-
-
 
     inline Planet* get_pos() const{
         return this->current_pos;
