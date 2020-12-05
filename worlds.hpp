@@ -21,10 +21,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/unordered_map.hpp>
 
-
-
 #define COLOUR_MAX 16777215
-#define PLANET_MAX 100
 
 class Planet{
 private:
