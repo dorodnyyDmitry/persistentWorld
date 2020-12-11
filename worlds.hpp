@@ -30,9 +30,9 @@ private:
     int colour = 0;
     int nportals = 1;
     bool is_warpable;
-    int gen_name(int);
-    int gen_colour();
-    int gen_nportals();
+    int gen_name(int max, std::mt19937*);
+    int gen_colour(std::mt19937*);
+    int gen_nportals(std::mt19937*);
     std::vector<Planet*> portals;
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version){
@@ -40,41 +40,37 @@ private:
         ar & colour;
         ar & nportals;
         ar & is_warpable;
-        ar & this->portals;
+        ar & portals;
     }
 
 public:
     friend class boost::serialization::access;
     Planet(){}
-    Planet(int max_planets): name(gen_name(max_planets)), colour(gen_colour()), nportals(gen_nportals()), is_warpable(!(1-nportals)){
-        //portals = std::vector<Planet*> ;
-        //this->portals(nportals, 0);
-        this->portals.resize(nportals);
+    Planet(int max_planets, std::mt19937 *mt): name(gen_name(max_planets, mt)), colour(gen_colour(mt)), nportals(gen_nportals(mt)), is_warpable(!(1-nportals)){
+        portals.resize(nportals);
         assert(nportals >= 1);
         assert(colour >= 0 && colour <= COLOUR_MAX);
     }
 
-    inline int get_name() const {
-        return this->name;
+    int get_name() const {
+        return name;
     }
 
-    inline int get_colour() const {
-        return this->colour;
+    int get_colour() const {
+        return colour;
     }
 
-    inline int get_nportals() const {
-        return this->nportals;
+    int get_nportals() const {
+        return nportals;
     }
 
-    inline std::vector<Planet*>* get_portals(){
-        return &(this->portals);
+    std::vector<Planet*>* get_portals(){
+        return &portals;
     }
 
-    inline bool get_status() const {
-        return this->is_warpable;
+    bool get_status() const {
+        return is_warpable;
     }
-
-    void det_status();
 
     int get_exit();
 
@@ -84,7 +80,8 @@ class Universe{
 public:
     Universe(){}
     Universe(int init_max_planets): max_planets(init_max_planets){
-
+        std::random_device r;
+        rnd = std::mt19937{r()};
     }
 
     inline int get_max_planets(){
@@ -98,8 +95,14 @@ public:
     inline std::unordered_map<int, Planet*>* get_warpable(){
         return &(this->warpable);
     }
+
+    std::mt19937 *get_rnd(){
+        return &(this->rnd);
+    }
+
     Planet *new_planet();
 private:
+    std::mt19937 rnd;
     friend class boost::serialization::access;
     std::unordered_map<int, Planet*> planets;
     std::unordered_map<int, Planet*> warpable;
@@ -107,20 +110,10 @@ private:
     template<class Archive>
     void serialize(Archive &ar, const unsigned int version){
         ar & max_planets;
-        ar & this->planets;
-        ar & this->warpable;
+        ar & planets;
+        ar & warpable;
     }
 };
-
-/*class Portal{
-public:
-    Portal()
-    Planet* node1;
-    Planet* node2;
-    Planet* current_pos;
-    void use_portal(int);
-};*/
-
 
 class Player{
 public:
@@ -143,11 +136,16 @@ private:
     friend class boost::serialization::access;
     Planet* current_pos;
     Universe* universe;
+
     template<class Archive>
     void serialize(Archive &ar, const unsigned int version){
-        ar & this->current_pos;
-        ar & this->universe;
+        ar & current_pos;
+        ar & universe;
     }
 };
+
+void init_interactive();
+
+void init_automatic(int jumps);
 
 #endif//WORLDS_HPP

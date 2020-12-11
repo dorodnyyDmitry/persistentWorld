@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(persistentWorld)
 
-find_package(Boost 1.6 REQUIRED COMPONENTS serialization system)
+find_package(Boost 1.60 REQUIRED COMPONENTS serialization system)
 
 
 add_executable(${PROJECT_NAME} "main.cpp" "worlds.hpp" "worlds.cpp")
