@@ -50,12 +50,10 @@ Planet *Universe::new_planet(){
 
 void Player::use_portal(int nportal){
     if(current_pos->get_nportals() < nportal){
-        //std::cout << "\nNo such portal here\n";
         return;
     }
 
     if((*current_pos->get_portals())[nportal] != 0){
-        //std::cout << "Home sweet home\n";
         current_pos = (*current_pos->get_portals())[nportal];
         return;
     }
@@ -104,7 +102,6 @@ void Player::use_portal(int nportal){
         (*warp_to->get_portals())[warp_to->get_exit()] = current_pos;
         (*current_pos->get_portals())[nportal] = warp_to;
         current_pos = warp_to;
-        //std::cout << "Brave new world!\n";
         return;
     }
 }
