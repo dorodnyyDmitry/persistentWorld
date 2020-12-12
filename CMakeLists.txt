@@ -6,7 +6,9 @@ find_package(Boost 1.60 REQUIRED COMPONENTS serialization system)
 
 include_directories(nonius/include)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED on)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 #find_path(NONIUS_INCLUDE_DIR NAMES nonius/include/nonius/nonius.h++)
 
