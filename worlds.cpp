@@ -22,7 +22,7 @@ int Planet::gen_name(int usize, std::mt19937 *rnd){
 }
 
 int Planet::get_exit(){
-    for(int i = 0; i<= this->get_nportals(); i++){
+    for(int i = 0; i< this->get_nportals(); i++){
         if((*this->get_portals())[i] == 0){
             return i;
         }
