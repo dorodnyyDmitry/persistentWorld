@@ -20,6 +20,7 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/unordered_map.hpp>
+#include <nonius/nonius.h++>
 
 #define COLOUR_MAX 16777215
 
@@ -34,6 +35,7 @@ private:
     int gen_colour(std::mt19937*);
     int gen_nportals(std::mt19937*);
     std::vector<Planet*> portals;
+
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version){
         ar & name;
@@ -84,7 +86,7 @@ public:
         rnd = std::mt19937{r()};
     }
 
-    inline int get_max_planets(){
+    inline int get_max_planets() const{
         return this->max_planets;
     }
 
@@ -107,6 +109,7 @@ private:
     std::unordered_map<int, Planet*> planets;
     std::unordered_map<int, Planet*> warpable;
     int max_planets;
+
     template<class Archive>
     void serialize(Archive &ar, const unsigned int version){
         ar & max_planets;
@@ -130,7 +133,7 @@ public:
         return this->universe;
     }
 
-    void use_portal(int);
+    void use_portal(int nportal);
     void where_am_i();
 private:
     friend class boost::serialization::access;

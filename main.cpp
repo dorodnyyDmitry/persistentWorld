@@ -3,8 +3,11 @@
 int main()
 {
 
-    init_automatic(1000);
-    //init_interactive();
+    nonius::configuration cfg;
+    nonius::benchmark_registry benchmarks = {
+        nonius::benchmark("init_automatic(100)", []{ init_automatic(100); })
+    };
 
-    return 0;
+    nonius::go(cfg, benchmarks);
+
 }

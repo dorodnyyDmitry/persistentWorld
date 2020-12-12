@@ -62,34 +62,27 @@ void Player::use_portal(int nportal){
 
     std::unordered_map<int, Planet*> *warpable = this->get_uni()->get_warpable();
 
-    std::random_device r;
-    std::default_random_engine re(r());
-
     double xx = (warpable->size());
     double yy = (this->get_uni()->get_max_planets());
-    if(std::generate_canonical<double, 10>(re) <= xx/yy && xx >= 3){
+    std::uniform_int_distribution<> sizedist(0, yy);
+    if(sizedist(*this->get_uni()->get_rnd()) <= xx && xx > 10 ){
         //auto current_position = this->get_uni()->get_warpable()->extract(current_pos);
-       // std::cout<< "Familiar place...\n";
         warpable->erase(current_pos->get_name());
-        std::random_device r;
-        std::default_random_engine re(r());
-
 
         std::vector<int> p_names;
         //std::pair<int, Planet*> p;
+
         for(std::unordered_map<int, Planet*>::iterator it = warpable->begin(); it != warpable->end(); ++it){
             if(it->second != 0){
                 p_names.push_back(it->first);
-                //std::cout << it->first << '\n';
             }
         }
 
-        std::uniform_int_distribution<> dist(0, p_names.size());
 
-        int nplanet = dist(re);
-        /*auto iter = warpable->begin();
-        std::advance(iter, nplanet);*/
-        //std::cout << p_names[nplanet] << '\n';
+        std::uniform_int_distribution<> dist(0, p_names.size()-1);
+
+        int nplanet = dist(*this->get_uni()->get_rnd());
+
         Planet* warp_to = (*warpable)[p_names[nplanet]];
         (*current_pos->get_portals())[nportal] = warp_to;
 
@@ -102,7 +95,6 @@ void Player::use_portal(int nportal){
         if(current_pos->get_exit() != -1){
             this->get_uni()->get_warpable()->insert(std::pair(current_pos->get_name(), current_pos));
         }
-
         current_pos = warp_to;
         return;
     }
@@ -143,7 +135,9 @@ void init_interactive(){
     while(input != -1){
         std::cout << std::endl;
         std::cout << "1 - where am I\n2 - travel\n3 - save\n4 - load\n5 - exit\n";
+
         std::cin >> input;
+        assert(input > 0 && input <= 5);
 
         switch (input) {
         case 1:{
@@ -152,8 +146,11 @@ void init_interactive(){
         }
         case 2:{
             std::cout << "Which portal\n";
+
             int x;
             std::cin >> x;
+            assert(input >= 0 && input <= player->get_pos()->get_nportals());
+
             player->use_portal(x);
             player->where_am_i();
             break;
@@ -184,17 +181,21 @@ void init_interactive(){
 
 
 void init_automatic(int jumps){
-    Universe *world = new Universe(100);
-    Planet *starting_planet = world->new_planet();
-    Player *player = new Player(starting_planet, world);
+
+    Universe world(100);
+    Planet *starting_planet = world.new_planet();
+    Player player(starting_planet, &world);
 
 
     for(;jumps >= 0; jumps--){
-        std::uniform_int_distribution<> dist(0, player->get_pos()->get_nportals()-1);
-        player->use_portal(dist(*world->get_rnd()));
+        std::uniform_int_distribution<> dist(0, player.get_pos()->get_nportals()-1);
+        int x = dist(*world.get_rnd());
+        assert(x <= player.get_pos()->get_nportals() && x >= 0);
+        player.use_portal(x);
+       //player->use_portal(dist(*world->get_rnd()));
     }
 
-    std::ofstream ofs("save.dat", std::ios::binary);
+    /*std::ofstream ofs("save.dat", std::ios::binary);
     boost::archive::binary_oarchive oa(ofs);
-    oa << player;
+    oa << player;*/
 }
