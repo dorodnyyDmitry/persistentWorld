@@ -177,11 +177,7 @@ void init_interactive(){
 }
 
 
-void init_automatic(int jumps){
-
-    Universe world(100);
-    Planet *starting_planet = world.new_planet();
-    Player player(starting_planet, &world);
+void init_automatic(int jumps, Player *player){
 
 
     for(;jumps >= 0; jumps--){
@@ -192,7 +188,57 @@ void init_automatic(int jumps){
        //player->use_portal(dist(*world->get_rnd()));
     }
 
-    /*std::ofstream ofs("save.dat", std::ios::binary);
+}
+
+void save_player(Player* player, std::string savename){
+    std::ofstream ofs("save"+savename+".dat", std::ios::binary);
     boost::archive::binary_oarchive oa(ofs);
-    oa << player;*/
+    oa << player;
+}
+
+void load_player(Player* player, std::string savename){
+    std::ifstream ifs("save"+savename+".dat", std::ios::binary);
+    boost::archive::binary_iarchive ia(ifs);
+    ia >> player;
+}
+
+void save_bench(){
+    Universe w1(100);
+    Planet *starting_planet1 = w1.new_planet();
+    Player p1(starting_planet1, &w1);
+    init_automatic(100, p1);
+
+    Universe w2(100);
+    Planet *starting_planet2 = w2.new_planet();
+    Player p2(starting_planet2, &w2);
+    init_automatic(1000, p2);
+
+    Universe w3(100);
+    Planet *starting_planet3 = w3.new_planet();
+    Player p3(starting_planet3, &w3);
+    init_automatic(5000, p3);
+
+    Universe w4(100);
+    Planet *starting_planet4 = w4.new_planet();
+    Player p4(starting_planet4, &w4);
+    init_automatic(10000, p4);
+
+    nonius::configuration cfg_s;
+    cfg_s.output_file = "timings.html";
+
+    cfg_s.reporter = "html";
+
+    nonius::benchmark_registry benchmarks_s = {
+        nonius::benchmark("save 100", [&p1]{ save_player(p1, "1"); }),
+        nonius::benchmark("load 100", [&p1]{ load_player(p1, "1"); }),
+        nonius::benchmark("save 1000", [&p2]{ save_player(p2, "2"); }),
+        nonius::benchmark("load 1000", [&p2]{ load_player(p2, "2"); }),
+        nonius::benchmark("save 5000", [&p3]{ save_player(p3, "3"); }),
+        nonius::benchmark("load 5000", [&p3]{ load_player(p3, "3"); }),
+        nonius::benchmark("save 10000", [&p4]{ save_player(p4, "4"); }),
+        nonius::benchmark("load 10000", [&p4]{ load_player(p4, "4"); }),
+
+    };
+
+    nonius::go(cfg_s, benchmarks_s);
 }
