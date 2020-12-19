@@ -2,26 +2,24 @@ cmake_minimum_required(VERSION 3.8)
 
 project(persistentWorld)
 
-find_package(Boost 1.60 REQUIRED COMPONENTS serialization system)
-
-include_directories(nonius/include)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED on)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-
-#find_path(NONIUS_INCLUDE_DIR NAMES nonius/include/nonius/nonius.h++)
-
-#include(FindPackageHandleStandardArgs)
-#find_package_handle_standard_args(NONIUS NONIUS_INCLUDE_DIR)
-
-#if(NONIUS_FOUND AND NOT TARGET Nonius::Nonius)
-#    add_library(Nonius::Nonius INTERFACE IMPORTED)
-#    target_include_directories(Nonius::Nonius INTERFACE “${NONIUS_INCLUDE_DIR}”)
-#endif()
-
-#mark_as_advanced(NONIUS_INCLUDE_DIR)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 add_executable(${PROJECT_NAME} "main.cpp" "worlds.hpp" "worlds.cpp")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Boost::system Boost::serialization)
+find_package( Threads )
+
+find_package(nonius REQUIRED)
+
+find_package(Boost 1.60 REQUIRED COMPONENTS serialization system)
+
+#include_directories(nonius/include)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED on)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_THREAD_LIBS_INIT} Boost::system Boost::serialization nonius::nonius)
+
+
+
+
+

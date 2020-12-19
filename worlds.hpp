@@ -31,7 +31,7 @@ private:
     int colour = 0;
     int nportals = 1;
     bool is_warpable;
-    int gen_name(int max, std::mt19937*);
+    int gen_name(const int max, std::mt19937*);
     int gen_colour(std::mt19937*);
     int gen_nportals(std::mt19937*);
     std::vector<Planet*> portals;
@@ -66,15 +66,19 @@ public:
         return nportals;
     }
 
-    std::vector<Planet*>* get_portals(){
-        return &portals;
+    std::vector<Planet*> get_portals() const{
+        return portals;
+    }
+
+    void set_portal(int nportal, Planet* planet){
+        portals[nportal] = planet;
     }
 
     bool get_status() const {
         return is_warpable;
     }
 
-    int get_exit();
+    int get_exit() const;
 
 };
 
@@ -86,20 +90,20 @@ public:
         rnd = std::mt19937{r()};
     }
 
-    inline int get_max_planets() const{
-        return this->max_planets;
+    int get_max_planets() const{
+        return max_planets;
     }
 
-    inline std::unordered_map<int, Planet*>* get_planets(){
-        return &(this->planets);
+    std::unordered_map<int, Planet*>* get_planets(){
+        return &planets;
     }
 
-    inline std::unordered_map<int, Planet*>* get_warpable(){
-        return &(this->warpable);
+    std::unordered_map<int, Planet*> * get_warpable(){
+        return &warpable;
     }
 
     std::mt19937 *get_rnd(){
-        return &(this->rnd);
+        return &rnd;
     }
 
     Planet *new_planet();
@@ -125,15 +129,15 @@ public:
 
     }
 
-    inline Planet* get_pos() const{
-        return this->current_pos;
+    Planet* get_pos() const{
+        return current_pos;
     }
 
-    inline Universe* get_uni() const{
-        return this->universe;
+    Universe* get_uni() const{
+        return universe;
     }
 
-    void use_portal(int nportal);
+    void use_portal(const int nportal);
     void where_am_i();
 private:
     friend class boost::serialization::access;
@@ -149,6 +153,14 @@ private:
 
 void init_interactive();
 
-void init_automatic(int jumps);
+void save_player(Player player,const std::string save_name);
+
+void load_player(Player player,const std::string save_name);
+
+void init_automatic(int jumps, Player *player);
+
+void save_bench();
+
+void load_bench();
 
 #endif//WORLDS_HPP
